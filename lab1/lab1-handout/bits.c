@@ -171,8 +171,11 @@ NOTES:
  *   Rating: 1
  */
 int lsbZero(int x) {
-  return 2;
+    x = x>>1;
+    x = x<<1;
+    return x;
 }
+
 /* 
  * byteNot - bit-inversion to byte n from word x  
  *   Bytes numbered from 0 (LSB) to 3 (MSB)
@@ -182,7 +185,11 @@ int lsbZero(int x) {
  *   Rating: 2
  */
 int byteNot(int x, int n) {
-  return 2;
+    int neg = 0xff;
+    n = n<<3; //n = n * 8
+    int y = neg << n;
+    x = x^y;
+    return x;
 }
 /* 
  *   byteXor - compare the nth byte of x and y, if it is same, return 0, if not, return 1
@@ -195,7 +202,12 @@ int byteNot(int x, int n) {
  *   Rating: 2 
  */
 int byteXor(int x, int y, int n) {
-  return 2;
+    int res;
+    n = n<<3;
+    x = (x>>n) & 0xff;
+    y = (y>>n) & 0xff;
+    res = x^y;
+    return !!res;
 }
 /* 
  *   logicalAnd - x && y
@@ -204,7 +216,9 @@ int byteXor(int x, int y, int n) {
  *   Rating: 3 
  */
 int logicalAnd(int x, int y) {
-  return 2;
+    x = !!x;
+    y = !!y;
+    return x&y;
 }
 /* 
  *   logicalOr - x || y
@@ -213,7 +227,9 @@ int logicalAnd(int x, int y) {
  *   Rating: 3 
  */
 int logicalOr(int x, int y) {
-  return 2;
+    x = !!x;
+    y = !!y;
+    return x|y;
 }
 /* 
  * rotateLeft - Rotate x to the left by n
@@ -224,7 +240,10 @@ int logicalOr(int x, int y) {
  *   Rating: 3 
  */
 int rotateLeft(int x, int n) {
-  return 2;
+    int y = x<<n;
+    int z = ~((~0)<<n);//逻辑尺
+    x = z&(x>>(32+~n+1));
+    return x|y;
 }
 /*
  * parityCheck - returns 1 if x contains an odd number of 1's
@@ -234,7 +253,12 @@ int rotateLeft(int x, int n) {
  *   Rating: 4
  */
 int parityCheck(int x) {
-  return 2;
+    x = (x>>16)^x;
+    x = (x>>8)^x;
+    x = (x>>4)^x;
+    x = (x>>2)^x;
+    x = (x>>1)^x;
+    return x&1;
 }
 /*
  * mul2OK - Determine if can compute 2*x without overflow
@@ -246,7 +270,9 @@ int parityCheck(int x) {
  *   Rating: 2
  */
 int mul2OK(int x) {
-  return 2;
+    int log = (~0)<<31;
+    int res = log&(x^(x<<1));
+    return !res;
 }
 /*
  * mult3div2 - multiplies by 3/2 rounding toward 0,
@@ -260,7 +286,10 @@ int mul2OK(int x) {
  *   Rating: 2
  */
 int mult3div2(int x) {
-  return 2;
+    x = x+x+x;
+    int a = !!(x >> 31);
+    x = (x+a)>>1;
+    return x;
 }
 /* 
  * subOK - Determine if can compute x-y without overflow
@@ -271,7 +300,8 @@ int mult3div2(int x) {
  *   Rating: 3
  */
 int subOK(int x, int y) {
-  return 2;
+    int res = (x^y)^(x^y^(x-y));
+    
 }
 /* 
  * absVal - absolute value of x
