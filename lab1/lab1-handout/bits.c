@@ -189,7 +189,7 @@ int byteNot(int x, int n) {
     int y;
     n = n<<3; //n = n * 8
     y = neg << n;
-    x = x^y;
+    x = x^y;//与1异或取反
     return x;
 }
 /* 
@@ -206,7 +206,7 @@ int byteXor(int x, int y, int n) {
     int res;
     n = n<<3;
     x = (x>>n) & 0xff;
-    y = (y>>n) & 0xff;
+    y = (y>>n) & 0xff;//取出第n位
     res = x^y;
     return !!res;
 }
@@ -218,7 +218,7 @@ int byteXor(int x, int y, int n) {
  */
 int logicalAnd(int x, int y) {
     x = !!x;
-    y = !!y;
+    y = !!y;//转换为逻辑值
     return x&y;
 }
 /* 
@@ -229,7 +229,7 @@ int logicalAnd(int x, int y) {
  */
 int logicalOr(int x, int y) {
     x = !!x;
-    y = !!y;
+    y = !!y;//转换为逻辑值
     return x|y;
 }
 /* 
@@ -254,7 +254,7 @@ int rotateLeft(int x, int n) {
  *   Rating: 4
  */
 int parityCheck(int x) {
-    x = (x>>16)^x;
+    x = (x>>16)^x;//二分奇偶求和
     x = (x>>8)^x;
     x = (x>>4)^x;
     x = (x>>2)^x;
@@ -270,7 +270,7 @@ int parityCheck(int x) {
  *   Max ops: 20
  *   Rating: 2
  */
-int mul2OK(int x) {
+int mul2OK(int x) {//如果最高位和次高位异号，则溢出
     /* return !(((x>>31)&1)^((x>>30)&1)); */
     return (~((x>>31)^(x>>30)))&1;
 }
@@ -289,7 +289,7 @@ int mult3div2(int x) {
     int a;
     x = x+x+x;
     a = !!(x >> 31);
-    x = (x+a)>>1;
+    x = (x+a)>>1;//如果是负数，则上取整
     return x;
 }
 /* 
