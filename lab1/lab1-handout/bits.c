@@ -186,8 +186,9 @@ int lsbZero(int x) {
  */
 int byteNot(int x, int n) {
     int neg = 0xff;
+    int y;
     n = n<<3; //n = n * 8
-    int y = neg << n;
+    y = neg << n;
     x = x^y;
     return x;
 }
@@ -270,9 +271,8 @@ int parityCheck(int x) {
  *   Rating: 2
  */
 int mul2OK(int x) {
-    int log = (~0)<<31;
-    int res = log&(x^(x<<1));
-    return !res;
+    /* return !(((x>>31)&1)^((x>>30)&1)); */
+    return (~((x>>31)^(x>>30)))&1;
 }
 /*
  * mult3div2 - multiplies by 3/2 rounding toward 0,
@@ -286,8 +286,9 @@ int mul2OK(int x) {
  *   Rating: 2
  */
 int mult3div2(int x) {
+    int a;
     x = x+x+x;
-    int a = !!(x >> 31);
+    a = !!(x >> 31);
     x = (x+a)>>1;
     return x;
 }
@@ -300,8 +301,8 @@ int mult3div2(int x) {
  *   Rating: 3
  */
 int subOK(int x, int y) {
-    int res = (x^y)^(x^y^(x-y));
-    
+    int res = (x^y)&(x^(x+~y+1));
+    return !((res >> 31)&1);
 }
 /* 
  * absVal - absolute value of x
@@ -312,7 +313,8 @@ int subOK(int x, int y) {
  *   Rating: 4
  */
 int absVal(int x) {
-  return 2;
+    int sng = x>>31;//全1或全0
+    return (x^sng) + (sng&1);
 }
 /* 
  * float_abs - Return bit-level equivalent of absolute value of f for
@@ -326,7 +328,11 @@ int absVal(int x) {
  *   Rating: 2
  */
 unsigned float_abs(unsigned uf) {
-  return 2;
+    unsigned rule = 0x7f800000;
+    unsigned rle1 = 0x80000000;
+    unsigned rle2 = 0x007fffff;
+    if (((uf & rule) == rule)&&(uf & rle2)) return uf;//阶码部分全1，尾数部分非0
+    else return (rle1&uf)^uf;
 }
 /* 
  * float_f2i - Return bit-level equivalent of expression (int) f
@@ -341,5 +347,24 @@ unsigned float_abs(unsigned uf) {
  *   Rating: 4
  */
 int float_f2i(unsigned uf) {
-  return 2;
+    unsigned rule1 = 0x80000000;//符号部分
+    unsigned rule2 = 0x7f800000;//阶码部分
+    unsigned rule3 = 0x007fffff;//尾数部分
+    int a = ((rule2 & uf)>>23) - 127;//存移位数
+    int res;
+    int res1 = 1;
+    if((uf&rule2) == rule2) return 0x80000000u;//阶码部分全1
+    else if((uf&rule2) == 0) return 0; //阶码部分全0
+    else if(a<0) return 0;
+    else if(a>=32) return 0x80000000;
+    else 
+    {
+        res1 <<= a;
+        res = rule3 & uf;
+        if(a>=23) res <<= (a - 23);
+        else res >>= (23-a);
+        res |= res1;
+        if(uf & rule1) res = ~res + 1;
+    }
+    return res;
 }
