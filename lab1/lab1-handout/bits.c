@@ -356,7 +356,7 @@ int float_f2i(unsigned uf) {
     if((uf&rule2) == rule2) return 0x80000000u;//阶码部分全1
     else if((uf&rule2) == 0) return 0; //阶码部分全0
     else if(a<0) return 0;
-    else if(a>=32) return 0x80000000;
+    else if(a>=32) return 0x80000000;//溢出
     else 
     {
         res1 <<= a;
