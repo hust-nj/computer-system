@@ -1,5 +1,5 @@
 
-bomb:     file format elf32-i386
+bomb：     文件格式 elf32-i386
 
 
 Disassembly of section .init:
