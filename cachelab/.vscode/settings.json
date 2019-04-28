@@ -1,0 +1,8 @@
+{
+    "python.linting.pylintEnabled": true,
+    "c-cpp-flylint.flexelint.enable": false,
+    "c-cpp-flylint.clang.enable": false,
+    "files.associations": {
+        "cachelab.h": "c"
+    }
+}
